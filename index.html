@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -9,210 +8,477 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta name="description"
-        content="WaterVision - Sistema de monitoramento da qualidade e nível da água">
+        content="WaterVision - Sistema IoT de monitoramento da qualidade e nível da água">
 
     <title>WaterVision | Monitoramento da Água</title>
 
 
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
 
     <!-- Bootstrap Icons -->
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 
     <!-- Chart.js -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <style>
 
         :root {
+
             --water-primary: #00a9b7;
             --water-secondary: #007c89;
-            --water-light: #e8f9fb;
             --water-dark: #063b42;
+            --water-light: #e8f9fb;
+            --water-background: #f4fafb;
+
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
         }
 
 
         body {
-            background: #f4fafb;
+
+            margin: 0;
+
+            background: var(--water-background);
+
             color: #18363b;
-            font-family: Arial, Helvetica, sans-serif;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
         }
 
 
         /* NAVBAR */
 
         .navbar {
-            background: linear-gradient(
-                135deg,
-                var(--water-primary),
-                var(--water-secondary)
-            );
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--water-primary),
+                    var(--water-secondary)
+                );
+
         }
 
 
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.4rem;
+
+            font-size: 1.5rem;
+
+            font-weight: 800;
+
+        }
+
+
+        .navbar-brand i {
+
+            margin-right: 8px;
+
+        }
+
+
+        .nav-link {
+
+            font-weight: 600;
+
         }
 
 
         /* HERO */
 
         .hero {
+
             background:
                 linear-gradient(
-                    rgba(0, 90, 100, 0.82),
-                    rgba(0, 120, 135, 0.82)
+                    rgba(0, 80, 90, 0.88),
+                    rgba(0, 120, 135, 0.88)
                 ),
-                linear-gradient(135deg, #00a9b7, #006b76);
+                linear-gradient(
+                    135deg,
+                    #00a9b7,
+                    #006b76
+                );
 
             color: white;
-            padding: 90px 20px;
+
+            padding:
+                100px
+                20px
+                90px;
+
         }
 
 
         .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 800;
+
+            font-size:
+                clamp(
+                    2.8rem,
+                    7vw,
+                    5rem
+                );
+
+            font-weight: 900;
+
+            margin-bottom: 20px;
+
         }
 
 
         .hero p {
-            max-width: 750px;
-            margin: 20px auto;
+
+            max-width: 800px;
+
+            margin:
+                15px
+                auto;
+
             font-size: 1.15rem;
-            opacity: 0.95;
+
+            line-height: 1.7;
+
         }
 
 
-        /* STATUS */
-
         .status-badge {
+
             display: inline-flex;
+
             align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
+
+            gap: 10px;
+
+            padding:
+                9px
+                17px;
+
             border-radius: 50px;
-            background: rgba(255,255,255,0.18);
-            color: white;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.16
+                );
+
+            backdrop-filter: blur(8px);
+
         }
 
 
         .status-dot {
-            width: 10px;
-            height: 10px;
-            background: #4cff91;
+
+            width: 11px;
+
+            height: 11px;
+
             border-radius: 50%;
+
+            background: #4cff91;
+
+            box-shadow:
+                0 0 10px
+                rgba(
+                    76,
+                    255,
+                    145,
+                    0.8
+                );
+
+        }
+
+
+        /* SEÇÕES */
+
+        section {
+
+            scroll-margin-top: 70px;
+
+        }
+
+
+        .section-title {
+
+            color:
+                var(--water-dark);
+
+            font-weight: 900;
+
+        }
+
+
+        .section-subtitle {
+
+            color: #6c8589;
+
         }
 
 
         /* CARDS */
 
         .data-card {
-            border: none;
-            border-radius: 18px;
-            transition: 0.25s;
+
             height: 100%;
-            box-shadow: 0 5px 20px rgba(0, 70, 80, 0.08);
+
+            border: none;
+
+            border-radius: 20px;
+
+            background: white;
+
+            box-shadow:
+                0 6px 25px
+                rgba(
+                    0,
+                    70,
+                    80,
+                    0.08
+                );
+
+            transition:
+                transform 0.25s,
+                box-shadow 0.25s;
+
         }
 
 
         .data-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 70, 80, 0.15);
+
+            transform:
+                translateY(-6px);
+
+            box-shadow:
+                0 12px 35px
+                rgba(
+                    0,
+                    70,
+                    80,
+                    0.15
+                );
+
         }
 
 
         .data-icon {
-            width: 52px;
-            height: 52px;
+
+            width: 55px;
+
+            height: 55px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-            border-radius: 14px;
-            background: var(--water-light);
-            color: var(--water-primary);
-            font-size: 1.5rem;
+
+            border-radius: 15px;
+
+            background:
+                var(--water-light);
+
+            color:
+                var(--water-primary);
+
+            font-size: 1.55rem;
+
         }
 
 
         .data-value {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--water-dark);
+
+            font-size: 2.3rem;
+
+            font-weight: 900;
+
+            color:
+                var(--water-dark);
+
         }
 
 
         .data-unit {
-            color: #6b8589;
+
+            color: #71878b;
+
             font-size: 0.95rem;
+
         }
 
 
-        /* SECTIONS */
+        .parameter-description {
 
-        .section-title {
-            color: var(--water-dark);
-            font-weight: 800;
+            color: #71878b;
+
+            font-size: 0.85rem;
+
         }
 
 
-        .section-subtitle {
-            color: #6c8589;
-        }
-
-
-        /* CHART */
-
-        .chart-container {
-            position: relative;
-            height: 350px;
-        }
-
+        /* GRÁFICOS */
 
         .chart-card {
+
             border: none;
-            border-radius: 18px;
-            box-shadow: 0 5px 20px rgba(0, 70, 80, 0.08);
+
+            border-radius: 20px;
+
+            background: white;
+
+            box-shadow:
+                0 6px 25px
+                rgba(
+                    0,
+                    70,
+                    80,
+                    0.08
+                );
+
         }
 
 
-        /* TABLE */
+        .chart-container {
+
+            position: relative;
+
+            height: 330px;
+
+        }
+
+
+        /* TABELA */
 
         .table-card {
+
             border: none;
-            border-radius: 18px;
+
+            border-radius: 20px;
+
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 70, 80, 0.08);
+
+            box-shadow:
+                0 6px 25px
+                rgba(
+                    0,
+                    70,
+                    80,
+                    0.08
+                );
+
+        }
+
+
+        .table thead {
+
+            background:
+                var(--water-dark);
+
+            color: white;
+
+        }
+
+
+        .table thead th {
+
+            padding: 15px;
+
+            white-space: nowrap;
+
+        }
+
+
+        .table tbody td {
+
+            padding: 13px;
+
+            white-space: nowrap;
+
+        }
+
+
+        /* STATUS */
+
+        .online {
+
+            color: #159447;
+
+        }
+
+
+        .offline {
+
+            color: #d63a3a;
+
         }
 
 
         /* FOOTER */
 
         footer {
-            background: var(--water-dark);
+
+            background:
+                var(--water-dark);
+
             color: white;
+
         }
 
 
-        /* RESPONSIVO */
+        footer strong {
+
+            font-size: 1.3rem;
+
+        }
+
+
+        /* RESPONSIVIDADE */
 
         @media (max-width: 768px) {
 
             .hero {
-                padding: 65px 20px;
+
+                padding:
+                    70px
+                    20px;
+
             }
 
+
             .chart-container {
+
                 height: 280px;
+
+            }
+
+
+            .data-value {
+
+                font-size: 2rem;
+
             }
 
         }
@@ -225,963 +491,1639 @@
 <body>
 
 
-<!-- ============================= -->
-<!-- NAVBAR -->
-<!-- ============================= -->
+    <!-- NAVBAR -->
 
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav
+        class="navbar navbar-expand-lg navbar-dark sticky-top">
 
-    <div class="container">
+        <div class="container">
 
-        <a class="navbar-brand" href="#">
-            <i class="bi bi-droplet-half"></i>
-            WaterVision
-        </a>
+            <a
+                class="navbar-brand"
+                href="#">
 
+                <i
+                    class="bi bi-droplet-half">
+                </i>
 
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbar">
+                WaterVision
 
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
+            </a>
 
 
-        <div class="collapse navbar-collapse" id="navbar">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbar">
 
-            <ul class="navbar-nav ms-auto">
+                <span
+                    class="navbar-toggler-icon">
+                </span>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#monitoramento">
-                        Monitoramento
-                    </a>
-                </li>
+            </button>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#graficos">
-                        Gráficos
-                    </a>
-                </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#historico">
-                        Histórico
-                    </a>
-                </li>
+            <div
+                class="collapse navbar-collapse"
+                id="navbar">
 
-            </ul>
+                <ul
+                    class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#monitoramento">
+
+                            Monitoramento
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#graficos">
+
+                            Gráficos
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#historico">
+
+                            Histórico
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </div>
 
         </div>
 
-    </div>
-
-</nav>
+    </nav>
 
 
-<!-- ============================= -->
-<!-- HERO -->
-<!-- ============================= -->
 
-<header class="hero text-center">
+    <!-- HERO -->
 
-    <div class="container">
+    <header
+        class="hero text-center">
 
-        <div class="status-badge mb-4">
+        <div
+            class="container">
 
-            <span class="status-dot"></span>
 
-            <span id="statusSistema">
-                Conectando ao sistema...
-            </span>
+            <div
+                class="status-badge mb-4">
+
+                <span
+                    class="status-dot"
+                    id="statusDot">
+                </span>
+
+                <span
+                    id="statusSistema">
+
+                    Conectando ao sistema...
+
+                </span>
+
+            </div>
+
+
+            <h1>
+
+                WaterVision
+
+            </h1>
+
+
+            <p>
+
+                Monitoramento inteligente de
+                parâmetros ambientais para
+                acompanhamento da qualidade
+                e do nível da água.
+
+            </p>
+
+
+            <p
+                class="mb-0">
+
+                Última atualização:
+
+                <strong
+                    id="ultimaAtualizacao">
+
+                    --
+
+                </strong>
+
+            </p>
+
 
         </div>
 
-
-        <h1>
-            WaterVision
-        </h1>
+    </header>
 
 
-        <p>
-            Monitoramento inteligente de parâmetros ambientais
-            para acompanhamento da qualidade e nível da água.
-        </p>
+
+    <!-- MONITORAMENTO -->
+
+    <section
+        id="monitoramento"
+        class="py-5">
+
+        <div
+            class="container">
 
 
-        <p class="mb-0">
+            <div
+                class="text-center mb-5">
 
-            Última atualização:
-            <strong id="ultimaAtualizacao">
-                --
+                <h2
+                    class="section-title">
+
+                    Monitoramento em tempo quase real
+
+                </h2>
+
+
+                <p
+                    class="section-subtitle">
+
+                    Dados recebidos diretamente
+                    do sistema IoT.
+
+                </p>
+
+            </div>
+
+
+
+            <div
+                class="row g-4">
+
+
+                <!-- NÍVEL -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3">
+
+                    <div
+                        class="card data-card p-4">
+
+                        <div
+                            class="d-flex justify-content-between mb-4">
+
+                            <div>
+
+                                <small
+                                    class="text-muted">
+
+                                    Nível da água
+
+                                </small>
+
+                                <h5
+                                    class="mb-0">
+
+                                    Sensor ultrassônico
+
+                                </h5>
+
+                            </div>
+
+
+                            <div
+                                class="data-icon">
+
+                                <i
+                                    class="bi bi-water">
+                                </i>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                id="nivel"
+                                class="data-value">
+
+                                --
+
+                            </span>
+
+                            <span
+                                class="data-unit">
+
+                                cm
+
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            class="parameter-description mt-2 mb-0">
+
+                            Distância medida até
+                            a superfície da água.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PH -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3">
+
+                    <div
+                        class="card data-card p-4">
+
+                        <div
+                            class="d-flex justify-content-between mb-4">
+
+                            <div>
+
+                                <small
+                                    class="text-muted">
+
+                                    Potencial hidrogeniônico
+
+                                </small>
+
+                                <h5
+                                    class="mb-0">
+
+                                    pH
+
+                                </h5>
+
+                            </div>
+
+
+                            <div
+                                class="data-icon">
+
+                                <i
+                                    class="bi bi-droplet">
+                                </i>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                id="ph"
+                                class="data-value">
+
+                                --
+
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            class="parameter-description mt-2 mb-0">
+
+                            Indicador de acidez
+                            ou alcalinidade.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TURBIDEZ -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3">
+
+                    <div
+                        class="card data-card p-4">
+
+                        <div
+                            class="d-flex justify-content-between mb-4">
+
+                            <div>
+
+                                <small
+                                    class="text-muted">
+
+                                    Qualidade da água
+
+                                </small>
+
+                                <h5
+                                    class="mb-0">
+
+                                    Turbidez
+
+                                </h5>
+
+                            </div>
+
+
+                            <div
+                                class="data-icon">
+
+                                <i
+                                    class="bi bi-cloud-haze2">
+                                </i>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                id="turbidez"
+                                class="data-value">
+
+                                --
+
+                            </span>
+
+                            <span
+                                class="data-unit">
+
+                                NTU
+
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            class="parameter-description mt-2 mb-0">
+
+                            Indica a presença de
+                            partículas na água.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TEMPERATURA -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3">
+
+                    <div
+                        class="card data-card p-4">
+
+                        <div
+                            class="d-flex justify-content-between mb-4">
+
+                            <div>
+
+                                <small
+                                    class="text-muted">
+
+                                    Temperatura
+
+                                </small>
+
+                                <h5
+                                    class="mb-0">
+
+                                    Água
+
+                                </h5>
+
+                            </div>
+
+
+                            <div
+                                class="data-icon">
+
+                                <i
+                                    class="bi bi-thermometer-half">
+                                </i>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                id="temperatura"
+                                class="data-value">
+
+                                --
+
+                            </span>
+
+                            <span
+                                class="data-unit">
+
+                                °C
+
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            class="parameter-description mt-2 mb-0">
+
+                            Temperatura medida
+                            diretamente na água.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- GRÁFICOS -->
+
+    <section
+        id="graficos"
+        class="py-5 bg-light">
+
+        <div
+            class="container">
+
+
+            <div
+                class="text-center mb-5">
+
+                <h2
+                    class="section-title">
+
+                    Histórico das medições
+
+                </h2>
+
+
+                <p
+                    class="section-subtitle">
+
+                    Dados históricos armazenados
+                    no sistema.
+
+                </p>
+
+            </div>
+
+
+
+            <div
+                class="row g-4">
+
+
+                <!-- GRÁFICO NÍVEL -->
+
+                <div
+                    class="col-12 col-lg-6">
+
+                    <div
+                        class="card chart-card p-4">
+
+                        <h5
+                            class="mb-4">
+
+                            <i
+                                class="bi bi-graph-up">
+                            </i>
+
+                            Nível da água
+
+                        </h5>
+
+
+                        <div
+                            class="chart-container">
+
+                            <canvas
+                                id="graficoNivel">
+                            </canvas>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- GRÁFICO PH -->
+
+                <div
+                    class="col-12 col-lg-6">
+
+                    <div
+                        class="card chart-card p-4">
+
+                        <h5
+                            class="mb-4">
+
+                            <i
+                                class="bi bi-graph-up">
+                            </i>
+
+                            pH
+
+                        </h5>
+
+
+                        <div
+                            class="chart-container">
+
+                            <canvas
+                                id="graficoPH">
+                            </canvas>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- GRÁFICO TURBIDEZ -->
+
+                <div
+                    class="col-12 col-lg-6">
+
+                    <div
+                        class="card chart-card p-4">
+
+                        <h5
+                            class="mb-4">
+
+                            <i
+                                class="bi bi-bar-chart-line">
+                            </i>
+
+                            Turbidez
+
+                        </h5>
+
+
+                        <div
+                            class="chart-container">
+
+                            <canvas
+                                id="graficoTurbidez">
+                            </canvas>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- GRÁFICO TEMPERATURA -->
+
+                <div
+                    class="col-12 col-lg-6">
+
+                    <div
+                        class="card chart-card p-4">
+
+                        <h5
+                            class="mb-4">
+
+                            <i
+                                class="bi bi-thermometer-half">
+                            </i>
+
+                            Temperatura
+
+                        </h5>
+
+
+                        <div
+                            class="chart-container">
+
+                            <canvas
+                                id="graficoTemperatura">
+                            </canvas>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- HISTÓRICO -->
+
+    <section
+        id="historico"
+        class="py-5">
+
+        <div
+            class="container">
+
+
+            <div
+                class="text-center mb-5">
+
+                <h2
+                    class="section-title">
+
+                    Histórico de medições
+
+                </h2>
+
+
+                <p
+                    class="section-subtitle">
+
+                    Últimos registros armazenados
+                    no Google Sheets.
+
+                </p>
+
+            </div>
+
+
+
+            <div
+                class="card table-card">
+
+
+                <div
+                    class="table-responsive">
+
+                    <table
+                        class="table table-hover align-middle mb-0">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Data/Hora
+                                </th>
+
+                                <th>
+                                    Nível
+                                </th>
+
+                                <th>
+                                    pH
+                                </th>
+
+                                <th>
+                                    Turbidez
+                                </th>
+
+                                <th>
+                                    Temperatura
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="tabelaDados">
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="text-center py-4">
+
+                                    Carregando dados...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FOOTER -->
+
+    <footer
+        class="py-4">
+
+        <div
+            class="container text-center">
+
+            <strong>
+
+                <i
+                    class="bi bi-droplet-half">
+                </i>
+
+                WaterVision
+
             </strong>
 
-        </p>
 
-    </div>
+            <p
+                class="mb-0 mt-2">
 
-</header>
+                Sistema IoT para
+                monitoramento ambiental.
 
-
-<!-- ============================= -->
-<!-- MONITORAMENTO -->
-<!-- ============================= -->
-
-<section id="monitoramento" class="py-5">
-
-    <div class="container">
-
-        <div class="text-center mb-5">
-
-            <h2 class="section-title">
-                Monitoramento em tempo quase real
-            </h2>
-
-            <p class="section-subtitle">
-                Dados recebidos diretamente do sistema IoT.
             </p>
 
-        </div>
 
+            <small
+                class="d-block mt-2">
 
-        <div class="row g-4">
+                Dados atualizados
+                automaticamente.
 
-
-            <!-- NÍVEL -->
-
-            <div class="col-12 col-md-6 col-xl-3">
-
-                <div class="card data-card p-4">
-
-                    <div class="d-flex justify-content-between mb-4">
-
-                        <div>
-
-                            <small class="text-muted">
-                                Nível da água
-                            </small>
-
-                            <h5 class="mb-0">
-                                Sensor ultrassônico
-                            </h5>
-
-                        </div>
-
-                        <div class="data-icon">
-
-                            <i class="bi bi-water"></i>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <span
-                            id="nivel"
-                            class="data-value">
-
-                            --
-
-                        </span>
-
-                        <span class="data-unit">
-                            cm
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- PH -->
-
-            <div class="col-12 col-md-6 col-xl-3">
-
-                <div class="card data-card p-4">
-
-                    <div class="d-flex justify-content-between mb-4">
-
-                        <div>
-
-                            <small class="text-muted">
-                                Potencial hidrogeniônico
-                            </small>
-
-                            <h5 class="mb-0">
-                                pH
-                            </h5>
-
-                        </div>
-
-                        <div class="data-icon">
-
-                            <i class="bi bi-droplet"></i>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <span
-                            id="ph"
-                            class="data-value">
-
-                            --
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- TURBIDEZ -->
-
-            <div class="col-12 col-md-6 col-xl-3">
-
-                <div class="card data-card p-4">
-
-                    <div class="d-flex justify-content-between mb-4">
-
-                        <div>
-
-                            <small class="text-muted">
-                                Qualidade da água
-                            </small>
-
-                            <h5 class="mb-0">
-                                Turbidez
-                            </h5>
-
-                        </div>
-
-                        <div class="data-icon">
-
-                            <i class="bi bi-cloud-haze2"></i>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <span
-                            id="turbidez"
-                            class="data-value">
-
-                            --
-
-                        </span>
-
-                        <span class="data-unit">
-                            NTU
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- TEMPERATURA -->
-
-            <div class="col-12 col-md-6 col-xl-3">
-
-                <div class="card data-card p-4">
-
-                    <div class="d-flex justify-content-between mb-4">
-
-                        <div>
-
-                            <small class="text-muted">
-                                Temperatura
-                            </small>
-
-                            <h5 class="mb-0">
-                                Água
-                            </h5>
-
-                        </div>
-
-                        <div class="data-icon">
-
-                            <i class="bi bi-thermometer-half"></i>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <span
-                            id="temperatura"
-                            class="data-value">
-
-                            --
-
-                        </span>
-
-                        <span class="data-unit">
-                            °C
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+            </small>
 
         </div>
 
-    </div>
+    </footer>
 
-</section>
 
 
-<!-- ============================= -->
-<!-- GRÁFICOS -->
-<!-- ============================= -->
+    <!-- Bootstrap JS -->
 
-<section id="graficos" class="py-5 bg-light">
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 
-    <div class="container">
 
-        <div class="text-center mb-5">
 
-            <h2 class="section-title">
-                Histórico das medições
-            </h2>
+    <!-- JAVASCRIPT DO WATERVISION -->
 
-            <p class="section-subtitle">
-                Visualização das últimas leituras recebidas.
-            </p>
+    <script>
 
-        </div>
+        /* ============================
+           CONFIGURAÇÃO
+        ============================ */
 
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbwAmuzOd6fFhc-GJ1bow9oKLr5gz2GBCS0GlInj07d_qgZKCImsc7hx4kkU3m9rgPl4/exec";
 
-        <div class="row g-4">
 
+        /* ============================
+           GRÁFICOS
+        ============================ */
 
-            <!-- GRÁFICO NÍVEL -->
+        let graficoNivel;
 
-            <div class="col-12 col-lg-6">
+        let graficoPH;
 
-                <div class="card chart-card p-4">
+        let graficoTurbidez;
 
-                    <h5 class="mb-4">
-                        <i class="bi bi-graph-up"></i>
-                        Nível da água
-                    </h5>
+        let graficoTemperatura;
 
-                    <div class="chart-container">
 
-                        <canvas id="graficoNivel"></canvas>
+        function criarGraficos() {
 
-                    </div>
 
-                </div>
-
-            </div>
-
-
-            <!-- GRÁFICO PH -->
-
-            <div class="col-12 col-lg-6">
-
-                <div class="card chart-card p-4">
-
-                    <h5 class="mb-4">
-                        <i class="bi bi-graph-up"></i>
-                        pH
-                    </h5>
-
-                    <div class="chart-container">
-
-                        <canvas id="graficoPH"></canvas>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ============================= -->
-<!-- HISTÓRICO -->
-<!-- ============================= -->
-
-<section id="historico" class="py-5">
-
-    <div class="container">
-
-        <div class="text-center mb-5">
-
-            <h2 class="section-title">
-                Últimas medições
-            </h2>
-
-            <p class="section-subtitle">
-                Registros recebidos pelo sistema.
-            </p>
-
-        </div>
-
-
-        <div class="card table-card">
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle mb-0">
-
-                    <thead class="table-dark">
-
-                        <tr>
-
-                            <th>
-                                Data/Hora
-                            </th>
-
-                            <th>
-                                Nível
-                            </th>
-
-                            <th>
-                                pH
-                            </th>
-
-                            <th>
-                                Turbidez
-                            </th>
-
-                            <th>
-                                Temperatura
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="tabelaDados">
-
-                        <tr>
-
-                            <td
-                                colspan="5"
-                                class="text-center">
-
-                                Carregando dados...
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ============================= -->
-<!-- FOOTER -->
-<!-- ============================= -->
-
-<footer class="py-4">
-
-    <div class="container text-center">
-
-        <strong>
-            WaterVision
-        </strong>
-
-        <p class="mb-0 mt-2">
-
-            Sistema IoT para monitoramento ambiental.
-
-        </p>
-
-    </div>
-
-</footer>
-
-
-<!-- Bootstrap JS -->
-
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
-
-
-<script>
-
-    /*
-    ==========================================
-    CONFIGURAÇÃO
-    ==========================================
-    */
-
-    const API_URL =
-        "https://script.google.com/macros/s/AKfycbwAmuzOd6fFhc-GJ1bow9oKLr5gz2GBCS0GlInj07d_qgZKCImsc7hx4kkU3m9rgPl4/exec";
-
-
-    /*
-    ==========================================
-    HISTÓRICO
-    ==========================================
-    */
-
-    const historico = {
-
-        labels: [],
-
-        nivel: [],
-
-        ph: [],
-
-        turbidez: [],
-
-        temperatura: []
-
-    };
-
-
-    /*
-    ==========================================
-    GRÁFICO NÍVEL
-    ==========================================
-    */
-
-    const graficoNivel = new Chart(
-
-        document.getElementById("graficoNivel"),
-
-        {
-
-            type: "line",
-
-            data: {
-
-                labels: historico.labels,
-
-                datasets: [
-
+            graficoNivel =
+                new Chart(
+                    document.getElementById(
+                        "graficoNivel"
+                    ),
                     {
 
-                        label: "Nível da água (cm)",
+                        type: "line",
 
-                        data: historico.nivel,
+                        data: {
 
-                        tension: 0.3,
+                            labels: [],
 
-                        fill: true
+                            datasets: [
+
+                                {
+
+                                    label:
+                                        "Nível da água (cm)",
+
+                                    data: [],
+
+                                    tension: 0.3,
+
+                                    fill: true
+
+                                }
+
+                            ]
+
+                        },
+
+                        options: {
+
+                            responsive: true,
+
+                            maintainAspectRatio: false,
+
+                            animation: false,
+
+                            interaction: {
+
+                                intersect: false,
+
+                                mode: "index"
+
+                            },
+
+                            scales: {
+
+                                y: {
+
+                                    beginAtZero: true
+
+                                }
+
+                            }
+
+                        }
 
                     }
+                );
 
-                ]
 
-            },
 
-            options: {
+            graficoPH =
+                new Chart(
+                    document.getElementById(
+                        "graficoPH"
+                    ),
+                    {
 
-                responsive: true,
+                        type: "line",
 
-                maintainAspectRatio: false,
+                        data: {
 
-                animation: false,
+                            labels: [],
 
-                scales: {
+                            datasets: [
 
-                    y: {
+                                {
 
-                        beginAtZero: true
+                                    label: "pH",
+
+                                    data: [],
+
+                                    tension: 0.3,
+
+                                    fill: true
+
+                                }
+
+                            ]
+
+                        },
+
+                        options: {
+
+                            responsive: true,
+
+                            maintainAspectRatio: false,
+
+                            animation: false,
+
+                            interaction: {
+
+                                intersect: false,
+
+                                mode: "index"
+
+                            },
+
+                            scales: {
+
+                                y: {
+
+                                    min: 0,
+
+                                    max: 14
+
+                                }
+
+                            }
+
+                        }
 
                     }
+                );
 
-                }
 
-            }
+
+            graficoTurbidez =
+                new Chart(
+                    document.getElementById(
+                        "graficoTurbidez"
+                    ),
+                    {
+
+                        type: "line",
+
+                        data: {
+
+                            labels: [],
+
+                            datasets: [
+
+                                {
+
+                                    label:
+                                        "Turbidez (NTU)",
+
+                                    data: [],
+
+                                    tension: 0.3,
+
+                                    fill: true
+
+                                }
+
+                            ]
+
+                        },
+
+                        options: {
+
+                            responsive: true,
+
+                            maintainAspectRatio: false,
+
+                            animation: false,
+
+                            interaction: {
+
+                                intersect: false,
+
+                                mode: "index"
+
+                            },
+
+                            scales: {
+
+                                y: {
+
+                                    beginAtZero: true
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                );
+
+
+
+            graficoTemperatura =
+                new Chart(
+                    document.getElementById(
+                        "graficoTemperatura"
+                    ),
+                    {
+
+                        type: "line",
+
+                        data: {
+
+                            labels: [],
+
+                            datasets: [
+
+                                {
+
+                                    label:
+                                        "Temperatura (°C)",
+
+                                    data: [],
+
+                                    tension: 0.3,
+
+                                    fill: true
+
+                                }
+
+                            ]
+
+                        },
+
+                        options: {
+
+                            responsive: true,
+
+                            maintainAspectRatio: false,
+
+                            animation: false,
+
+                            interaction: {
+
+                                intersect: false,
+
+                                mode: "index"
+
+                            }
+
+                        }
+
+                    }
+                );
 
         }
 
-    );
+
+        /* ============================
+           ATUALIZAR SISTEMA
+        ============================ */
+
+        async function atualizarDados() {
+
+            try {
 
 
-    /*
-    ==========================================
-    GRÁFICO PH
-    ==========================================
-    */
+                const resposta =
+                    await fetch(
+                        API_URL +
+                        "?t=" +
+                        Date.now()
+                    );
 
-    const graficoPH = new Chart(
 
-        document.getElementById("graficoPH"),
+                if (!resposta.ok) {
 
-        {
-
-            type: "line",
-
-            data: {
-
-                labels: historico.labels,
-
-                datasets: [
-
-                    {
-
-                        label: "pH",
-
-                        data: historico.ph,
-
-                        tension: 0.3,
-
-                        fill: true
-
-                    }
-
-                ]
-
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: false,
-
-                animation: false,
-
-                scales: {
-
-                    y: {
-
-                        min: 0,
-
-                        max: 14
-
-                    }
+                    throw new Error(
+                        "HTTP " +
+                        resposta.status
+                    );
 
                 }
 
-            }
 
-        }
-
-    );
+                const resultado =
+                    await resposta.json();
 
 
-    /*
-    ==========================================
-    ATUALIZAR SITE
-    ==========================================
-    */
+                if (
+                    resultado.status !==
+                    "sucesso"
+                ) {
 
-    async function atualizarDados() {
+                    throw new Error(
+                        "API sem dados"
+                    );
 
-        try {
-
-            const resposta =
-                await fetch(API_URL + "?t=" + Date.now());
+                }
 
 
-            if (!resposta.ok) {
+                const dados =
+                    resultado.dados;
 
-                throw new Error(
-                    "Erro HTTP: " + resposta.status
+
+                if (
+                    !dados ||
+                    dados.length === 0
+                ) {
+
+                    throw new Error(
+                        "Nenhuma medição encontrada"
+                    );
+
+                }
+
+
+                const ultimo =
+                    dados[dados.length - 1];
+
+
+                atualizarCards(ultimo);
+
+
+                atualizarGraficos(
+                    dados
+                );
+
+
+                atualizarTabela(
+                    dados
+                );
+
+
+                atualizarStatus(
+                    true
+                );
+
+
+            } catch (erro) {
+
+
+                console.error(
+                    "WaterVision:",
+                    erro
+                );
+
+
+                atualizarStatus(
+                    false
                 );
 
             }
 
-
-            const dados =
-                await resposta.json();
+        }
 
 
-            if (dados.status !== "sucesso") {
+        /* ============================
+           CARDS
+        ============================ */
 
-                document.getElementById(
-                    "statusSistema"
-                ).textContent =
-                    "Sem dados disponíveis";
-
-                return;
-
-            }
+        function atualizarCards(
+            dados
+        ) {
 
 
-            /*
-            ===============================
-            VALORES PRINCIPAIS
-            ===============================
-            */
+            document.getElementById(
+                "nivel"
+            ).textContent =
 
-            document.getElementById("nivel")
-                .textContent =
-                Number(dados.nivel)
-                .toFixed(2);
+                formatarNumero(
+                    dados.nivel
+                );
 
 
-            document.getElementById("ph")
-                .textContent =
-                Number(dados.ph)
-                .toFixed(2);
+
+            document.getElementById(
+                "ph"
+            ).textContent =
+
+                formatarNumero(
+                    dados.ph
+                );
 
 
-            document.getElementById("turbidez")
-                .textContent =
-                Number(dados.turbidez)
-                .toFixed(2);
+
+            document.getElementById(
+                "turbidez"
+            ).textContent =
+
+                formatarNumero(
+                    dados.turbidez
+                );
 
 
-            document.getElementById("temperatura")
-                .textContent =
-                Number(dados.temperatura)
-                .toFixed(2);
+
+            document.getElementById(
+                "temperatura"
+            ).textContent =
+
+                formatarNumero(
+                    dados.temperatura
+                );
 
 
-            /*
-            ===============================
-            DATA DA ÚLTIMA LEITURA
-            ===============================
-            */
 
             const data =
-                new Date(dados.dataHora);
+                converterData(
+                    dados.dataHora
+                );
 
 
             document.getElementById(
                 "ultimaAtualizacao"
             ).textContent =
+
                 data.toLocaleString(
                     "pt-BR"
                 );
 
-
-            /*
-            ===============================
-            STATUS
-            ===============================
-            */
-
-            document.getElementById(
-                "statusSistema"
-            ).textContent =
-                "Sistema online";
+        }
 
 
-            /*
-            ===============================
-            HISTÓRICO
-            ===============================
-            */
+        /* ============================
+           GRÁFICOS
+        ============================ */
 
-            const hora =
-                data.toLocaleTimeString(
-                    "pt-BR",
-                    {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit"
+        function atualizarGraficos(
+            dados
+        ) {
+
+
+            const labels =
+                dados.map(
+                    item => {
+
+                        const data =
+                            converterData(
+                                item.dataHora
+                            );
+
+
+                        return data.toLocaleTimeString(
+                            "pt-BR",
+                            {
+
+                                hour: "2-digit",
+
+                                minute: "2-digit",
+
+                                second: "2-digit"
+
+                            }
+                        );
+
                     }
                 );
 
 
-            historico.labels.push(hora);
 
-            historico.nivel.push(
-                Number(dados.nivel)
-            );
-
-            historico.ph.push(
-                Number(dados.ph)
-            );
-
-            historico.turbidez.push(
-                Number(dados.turbidez)
-            );
-
-            historico.temperatura.push(
-                Number(dados.temperatura)
-            );
+            const niveis =
+                dados.map(
+                    item =>
+                        Number(
+                            item.nivel
+                        )
+                );
 
 
-            /*
-            ===============================
-            LIMITAR HISTÓRICO
-            ===============================
-            */
 
-            if (historico.labels.length > 20) {
-
-                historico.labels.shift();
-
-                historico.nivel.shift();
-
-                historico.ph.shift();
-
-                historico.turbidez.shift();
-
-                historico.temperatura.shift();
-
-            }
+            const ph =
+                dados.map(
+                    item =>
+                        Number(
+                            item.ph
+                        )
+                );
 
 
-            /*
-            ===============================
-            ATUALIZAR GRÁFICOS
-            ===============================
-            */
+
+            const turbidez =
+                dados.map(
+                    item =>
+                        Number(
+                            item.turbidez
+                        )
+                );
+
+
+
+            const temperatura =
+                dados.map(
+                    item =>
+                        Number(
+                            item.temperatura
+                        )
+                );
+
+
+
+            graficoNivel.data.labels =
+                labels;
+
+            graficoNivel
+                .data
+                .datasets[0]
+                .data =
+                niveis;
 
             graficoNivel.update();
+
+
+
+            graficoPH.data.labels =
+                labels;
+
+            graficoPH
+                .data
+                .datasets[0]
+                .data =
+                ph;
 
             graficoPH.update();
 
 
-            /*
-            ===============================
-            ATUALIZAR TABELA
-            ===============================
-            */
 
-            atualizarTabela(
-                dados,
-                data
-            );
+            graficoTurbidez.data.labels =
+                labels;
 
+            graficoTurbidez
+                .data
+                .datasets[0]
+                .data =
+                turbidez;
 
-        } catch (erro) {
-
-            console.error(
-                "Erro:",
-                erro
-            );
+            graficoTurbidez.update();
 
 
-            document.getElementById(
-                "statusSistema"
-            ).textContent =
-                "Erro de conexão";
 
-        }
+            graficoTemperatura.data.labels =
+                labels;
 
-    }
+            graficoTemperatura
+                .data
+                .datasets[0]
+                .data =
+                temperatura;
 
-
-    /*
-    ==========================================
-    TABELA
-    ==========================================
-    */
-
-    function atualizarTabela(
-        dados,
-        data
-    ) {
-
-        const tabela =
-            document.getElementById(
-                "tabelaDados"
-            );
-
-
-        const linha =
-            document.createElement("tr");
-
-
-        linha.innerHTML = `
-
-            <td>
-                ${data.toLocaleString("pt-BR")}
-            </td>
-
-            <td>
-                ${Number(dados.nivel).toFixed(2)} cm
-            </td>
-
-            <td>
-                ${Number(dados.ph).toFixed(2)}
-            </td>
-
-            <td>
-                ${Number(dados.turbidez).toFixed(2)} NTU
-            </td>
-
-            <td>
-                ${Number(dados.temperatura).toFixed(2)} °C
-            </td>
-
-        `;
-
-
-        tabela.prepend(linha);
-
-
-        /*
-        Mantém somente 10 linhas
-        */
-
-        while (tabela.children.length > 10) {
-
-            tabela.removeChild(
-                tabela.lastChild
-            );
+            graficoTemperatura.update();
 
         }
 
-    }
+
+        /* ============================
+           TABELA
+        ============================ */
+
+        function atualizarTabela(
+            dados
+        ) {
 
 
-    /*
-    ==========================================
-    PRIMEIRA LEITURA
-    ==========================================
-    */
-
-    atualizarDados();
+            const tabela =
+                document.getElementById(
+                    "tabelaDados"
+                );
 
 
-    /*
-    ==========================================
-    ATUALIZAÇÃO AUTOMÁTICA
-    ==========================================
-    */
+            tabela.innerHTML = "";
 
-    setInterval(
-        atualizarDados,
-        5000
-    );
 
-</script>
+            const registros =
+                [...dados]
+                    .reverse();
+
+
+            registros.forEach(
+                item => {
+
+
+                    const data =
+                        converterData(
+                            item.dataHora
+                        );
+
+
+                    const linha =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    linha.innerHTML = `
+
+                        <td>
+                            ${data.toLocaleString(
+                                "pt-BR"
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatarNumero(
+                                item.nivel
+                            )}
+                            cm
+                        </td>
+
+                        <td>
+                            ${formatarNumero(
+                                item.ph
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatarNumero(
+                                item.turbidez
+                            )}
+                            NTU
+                        </td>
+
+                        <td>
+                            ${formatarNumero(
+                                item.temperatura
+                            )}
+                            °C
+                        </td>
+
+                    `;
+
+
+                    tabela.appendChild(
+                        linha
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* ============================
+           STATUS
+        ============================ */
+
+        function atualizarStatus(
+            online
+        ) {
+
+
+            const status =
+                document.getElementById(
+                    "statusSistema"
+                );
+
+
+            const ponto =
+                document.getElementById(
+                    "statusDot"
+                );
+
+
+            if (online) {
+
+                status.textContent =
+                    "Sistema online";
+
+                status.classList
+                    .remove(
+                        "offline"
+                    );
+
+                status.classList
+                    .add(
+                        "online"
+                    );
+
+                ponto.style.background =
+                    "#4cff91";
+
+            } else {
+
+                status.textContent =
+                    "Erro de conexão";
+
+                status.classList
+                    .remove(
+                        "online"
+                    );
+
+                status.classList
+                    .add(
+                        "offline"
+                    );
+
+                ponto.style.background =
+                    "#ff4c4c";
+
+            }
+
+        }
+
+
+        /* ============================
+           FORMATAÇÃO
+        ============================ */
+
+        function formatarNumero(
+            valor
+        ) {
+
+            const numero =
+                Number(valor);
+
+
+            if (
+                !Number.isFinite(
+                    numero
+                )
+            ) {
+
+                return "--";
+
+            }
+
+
+            return numero.toFixed(2);
+
+        }
+
+
+        /* ============================
+           DATA
+        ============================ */
+
+        function converterData(
+            valor
+        ) {
+
+            const data =
+                new Date(valor);
+
+
+            if (
+                isNaN(
+                    data.getTime()
+                )
+            ) {
+
+                return new Date();
+
+            }
+
+
+            return data;
+
+        }
+
+
+        /* ============================
+           INICIALIZAÇÃO
+        ============================ */
+
+        criarGraficos();
+
+        atualizarDados();
+
+
+        /* ============================
+           ATUALIZAÇÃO AUTOMÁTICA
+           A CADA 5 SEGUNDOS
+        ============================ */
+
+        setInterval(
+            atualizarDados,
+            5000
+        );
+
+    </script>
 
 
 </body>
 
 </html>
-```
