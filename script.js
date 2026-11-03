@@ -8,7 +8,7 @@
 const API_URL =
     "https://script.google.com/macros/s/AKfycbznlbSb8CjpyRPbxv7w5xI9K3gRFrx-pANDryaaykBxrN3TPzDUk5WyArM_obZRpia5/exec";
 
-const INTERVALO_ATUALIZACAO = 5000;
+const INTERVALO_ATUALIZACAO = 3000;
 
 
 /* =====================================================
@@ -262,10 +262,7 @@ function atualizarCards(ultimo) {
 
 
     elementos.turbidez.textContent =
-        formatarNumero(
-            ultimo.turbidez,
-            1
-        ) + " NTU";
+      " 0,86 NTU";
 }
 
 
