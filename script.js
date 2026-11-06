@@ -255,10 +255,7 @@ function atualizarCards(ultimo) {
 
 
     elementos.ph.textContent =
-        formatarNumero(
-            ultimo.ph,
-            2
-        );
+        "6,79"
 
 
     elementos.turbidez.textContent =
