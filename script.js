@@ -1,18 +1,18 @@
+
 "use strict";
 
-
 /* =====================================================
-   CONFIGURAÇÕES
+   CONFIGURACOES
 ===================================================== */
 
 const API_URL =
     "https://script.google.com/macros/s/AKfycbznlbSb8CjpyRPbxv7w5xI9K3gRFrx-pANDryaaykBxrN3TPzDUk5WyArM_obZRpia5/exec";
 
-const INTERVALO_ATUALIZACAO = 3000;
+const INTERVALO_ATUALIZACAO = 2000;
 
 
 /* =====================================================
-   VARIÁVEIS DOS GRÁFICOS
+   VARIAVEIS DOS GRAFICOS
 ===================================================== */
 
 let graficoNivel = null;
@@ -22,7 +22,7 @@ let graficoTurbidez = null;
 
 
 /* =====================================================
-   ELEMENTOS DA PÁGINA
+   ELEMENTOS DA PAGINA
 ===================================================== */
 
 const elementos = {
@@ -53,14 +53,35 @@ const elementos = {
 
     botaoAtualizar:
         document.getElementById("botaoAtualizar")
+
 };
 
 
 /* =====================================================
-   FORMATAÇÃO DE NÚMEROS
+   CAMPOS DOS SENSORES
+===================================================== */
+
+const CAMPOS_SENSORES = [
+    "nivel",
+    "temperatura",
+    "ph",
+    "turbidez"
+];
+
+
+/* =====================================================
+   FORMATACAO DE NUMEROS
 ===================================================== */
 
 function formatarNumero(valor, casas = 2) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+        return "--";
+    }
 
     const numero = Number(valor);
 
@@ -75,11 +96,35 @@ function formatarNumero(valor, casas = 2) {
             maximumFractionDigits: casas
         }
     );
+
 }
 
 
 /* =====================================================
-   FORMATAÇÃO DE DATA
+   VERIFICAR VALOR
+===================================================== */
+
+function valorValido(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+        return null;
+    }
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero)
+        ? numero
+        : null;
+
+}
+
+
+/* =====================================================
+   FORMATACAO DE DATA
 ===================================================== */
 
 function formatarData(data) {
@@ -101,11 +146,12 @@ function formatarData(data) {
             timeStyle: "medium"
         }
     );
+
 }
 
 
 /* =====================================================
-   STATUS DA CONEXÃO
+   STATUS DA CONEXAO
 ===================================================== */
 
 function atualizarStatus(online) {
@@ -132,7 +178,9 @@ function atualizarStatus(online) {
 
         elementos.statusText.textContent =
             "Sistema desconectado";
+
     }
+
 }
 
 
@@ -145,15 +193,12 @@ async function buscarDados() {
     try {
 
         const resposta = await fetch(
-            API_URL +
-            "?t=" +
-            Date.now(),
+            API_URL + "?t=" + Date.now(),
             {
                 method: "GET",
                 cache: "no-store"
             }
         );
-
 
         if (!resposta.ok) {
 
@@ -163,10 +208,8 @@ async function buscarDados() {
 
         }
 
-
         const resultado =
             await resposta.json();
-
 
         if (!resultado.sucesso) {
 
@@ -177,17 +220,20 @@ async function buscarDados() {
 
         }
 
-
         const dados =
             Array.isArray(resultado.dados)
                 ? resultado.dados
                 : [];
 
+        const estado =
+            resultado.estado || {};
 
         atualizarStatus(true);
 
-        processarDados(dados);
-
+        processarDados(
+            dados,
+            estado
+        );
 
     } catch (erro) {
 
@@ -200,124 +246,225 @@ async function buscarDados() {
 
         elementos.atualizacao.textContent =
             "Erro ao conectar com a API";
+
     }
+
 }
 
 
 /* =====================================================
-   PROCESSAMENTO
+   NORMALIZAR HISTORICO
 ===================================================== */
 
-function processarDados(dados) {
+function normalizarHistorico(dados) {
 
-    if (dados.length === 0) {
+    const estado = {
 
-        mostrarSemDados();
+        nivel: null,
+        temperatura: null,
+        ph: null,
+        turbidez: null
 
-        return;
-    }
+    };
 
+    return dados.map(item => {
 
-    const ultimo =
-        dados[dados.length - 1];
+        const registro = {
 
+            dataHora: item.dataHora
 
-    atualizarCards(ultimo);
+        };
 
-    atualizarTabela(dados);
+        CAMPOS_SENSORES.forEach(campo => {
 
-    atualizarGraficos(dados);
+            const valor =
+                valorValido(item[campo]);
 
+            // Atualiza somente quando existe
+            // uma nova leitura numérica.
 
-    elementos.atualizacao.textContent =
-        formatarData(ultimo.dataHora);
+            if (valor !== null) {
+
+                estado[campo] = valor;
+
+            }
+
+            registro[campo] =
+                estado[campo];
+
+        });
+
+        return registro;
+
+    });
+
 }
 
 
 /* =====================================================
-   CARDS
+   RECUPERAR ULTIMO VALOR DE CADA SENSOR
 ===================================================== */
 
-function atualizarCards(ultimo) {
+function recuperarUltimoEstado(
+    dados,
+    estadoAPI
+) {
+
+    const ultimo = {
+
+        nivel: null,
+        temperatura: null,
+        ph: null,
+        turbidez: null
+
+    };
+
+    // Recupera os últimos valores válidos
+    // encontrados no histórico.
+
+    dados.forEach(item => {
+
+        CAMPOS_SENSORES.forEach(campo => {
+
+            const valor =
+                valorValido(item[campo]);
+
+            if (valor !== null) {
+
+                ultimo[campo] = valor;
+
+            }
+
+        });
+
+    });
+
+    // O estado atual da API tem prioridade.
+
+    CAMPOS_SENSORES.forEach(campo => {
+
+        const valor =
+            valorValido(estadoAPI[campo]);
+
+        if (valor !== null) {
+
+            ultimo[campo] = valor;
+
+        }
+
+    });
+
+    return ultimo;
+
+}
+
+
+/* =====================================================
+   PROCESSAMENTO DOS DADOS
+===================================================== */
+
+function processarDados(
+    dados,
+    estadoAPI
+) {
+
+    const historico =
+        normalizarHistorico(dados);
+
+    const estadoAtual =
+        recuperarUltimoEstado(
+            dados,
+            estadoAPI
+        );
+
+    atualizarCards(estadoAtual);
+
+    if (historico.length > 0) {
+
+        atualizarTabela(historico);
+
+        atualizarGraficos(historico);
+
+        const ultimoRegistro =
+            historico[historico.length - 1];
+
+        elementos.atualizacao.textContent =
+            formatarData(
+                ultimoRegistro.dataHora
+            );
+
+    } else {
+
+        elementos.tabela.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-5">
+                    Nenhum registro encontrado.
+                </td>
+            </tr>
+        `;
+
+        destruirGraficos();
+
+        elementos.atualizacao.textContent =
+            "Aguardando primeiras leituras";
+
+    }
+
+}
+
+
+/* =====================================================
+   ATUALIZAR CARDS
+===================================================== */
+
+function atualizarCards(estado) {
 
     elementos.nivel.textContent =
         formatarNumero(
-            ultimo.nivel,
+            estado.nivel,
             1
-        ) + " cm";
-
+        ) + (
+            estado.nivel !== null
+                ? " cm"
+                : ""
+        );
 
     elementos.temperatura.textContent =
         formatarNumero(
-            ultimo.temperatura,
+            estado.temperatura,
             1
-        ) + " °C";
-
+        ) + (
+            estado.temperatura !== null
+                ? " °C"
+                : ""
+        );
 
     elementos.ph.textContent =
-        "6,79"
-
+        formatarNumero(
+            estado.ph,
+            2
+        );
 
     elementos.turbidez.textContent =
-      " 0,86 NTU";
+        formatarNumero(
+            estado.turbidez,
+            2
+        ) + (
+            estado.turbidez !== null
+                ? " NTU"
+                : ""
+        );
+
 }
 
 
 /* =====================================================
-   SEM DADOS
-===================================================== */
-
-function mostrarSemDados() {
-
-    elementos.nivel.textContent =
-        "--";
-
-    elementos.temperatura.textContent =
-        "--";
-
-    elementos.ph.textContent =
-        "--";
-
-    elementos.turbidez.textContent =
-        "--";
-
-
-    elementos.tabela.innerHTML = `
-
-        <tr>
-
-            <td
-                colspan="5"
-                class="text-center py-5"
-            >
-
-                <i class="bi bi-database fs-3 d-block mb-2"></i>
-
-                Nenhum registro encontrado.
-
-            </td>
-
-        </tr>
-
-    `;
-
-
-    elementos.atualizacao.textContent =
-        "Nenhum dado disponível";
-
-
-    destruirGraficos();
-}
-
-
-/* =====================================================
-   TABELA
+   TABELA DE HISTORICO
 ===================================================== */
 
 function atualizarTabela(dados) {
 
     elementos.tabela.innerHTML = "";
-
 
     dados
         .slice()
@@ -327,79 +474,87 @@ function atualizarTabela(dados) {
             const linha =
                 document.createElement("tr");
 
+            const valores = [
 
-            linha.innerHTML = `
+                formatarData(item.dataHora),
 
-                <td>
-                    ${formatarData(item.dataHora)}
-                </td>
+                formatarNumero(item.nivel, 1) +
+                    (item.nivel !== null ? " cm" : ""),
 
-                <td>
-                    ${formatarNumero(item.nivel, 1)}
-                    cm
-                </td>
+                formatarNumero(item.temperatura, 1) +
+                    (item.temperatura !== null ? " °C" : ""),
 
-                <td>
-                    ${formatarNumero(item.temperatura, 1)}
-                    °C
-                </td>
+                formatarNumero(item.ph, 2),
 
-                <td>
-                    ${formatarNumero(item.ph, 2)}
-                </td>
+                formatarNumero(item.turbidez, 1) +
+                    (item.turbidez !== null ? " NTU" : "")
 
-                <td>
-                    ${formatarNumero(item.turbidez, 1)}
-                    NTU
-                </td>
+            ];
 
-            `;
+            valores.forEach(valor => {
 
+                const celula =
+                    document.createElement("td");
 
-            elementos.tabela.appendChild(
-                linha
-            );
+                celula.textContent = valor;
+
+                linha.appendChild(celula);
+
+            });
+
+            elementos.tabela.appendChild(linha);
 
         });
+
 }
 
 
 /* =====================================================
-   DADOS DOS GRÁFICOS
+   DADOS DOS GRAFICOS
 ===================================================== */
 
 function prepararValores(dados, campo) {
 
     return dados.map(item => {
 
-        const valor =
-            Number(item[campo]);
+        const valor = item[campo];
 
-        return Number.isFinite(valor)
-            ? valor
-            : 0;
+        if (
+            valor === null ||
+            valor === undefined ||
+            valor === ""
+        ) {
+
+            return null;
+
+        }
+
+        const numero = Number(valor);
+
+        return Number.isFinite(numero)
+            ? numero
+            : null;
 
     });
+
 }
 
 
 /* =====================================================
-   LABELS DOS GRÁFICOS
+   LABELS DOS GRAFICOS
 ===================================================== */
 
 function prepararLabels(dados) {
 
     return dados.map(
-        item =>
-            formatarData(
-                item.dataHora
-            )
+        item => formatarData(item.dataHora)
     );
+
 }
 
 
 /* =====================================================
-   CONFIGURAÇÕES DOS GRÁFICOS
+   CONFIGURACOES DOS GRAFICOS
 ===================================================== */
 
 function opcoesGrafico(unidade) {
@@ -429,6 +584,12 @@ function opcoesGrafico(unidade) {
                 callbacks: {
 
                     label: function(context) {
+
+                        if (context.parsed.y === null) {
+
+                            return " Sem leitura";
+
+                        }
 
                         return (
                             " " +
@@ -492,11 +653,12 @@ function opcoesGrafico(unidade) {
         }
 
     };
+
 }
 
 
 /* =====================================================
-   CRIAR GRÁFICO
+   CRIAR GRAFICO
 ===================================================== */
 
 function criarGrafico(
@@ -510,6 +672,16 @@ function criarGrafico(
     const canvas =
         document.getElementById(canvasId);
 
+    if (!canvas) {
+
+        console.error(
+            "Canvas não encontrado:",
+            canvasId
+        );
+
+        return null;
+
+    }
 
     return new Chart(
         canvas,
@@ -543,7 +715,9 @@ function criarGrafico(
 
                         tension: 0.35,
 
-                        fill: true
+                        fill: true,
+
+                        spanGaps: false
 
                     }
 
@@ -555,78 +729,64 @@ function criarGrafico(
                 opcoesGrafico(unidade)
 
         }
+
     );
+
 }
 
 
 /* =====================================================
-   ATUALIZAR GRÁFICOS
+   ATUALIZAR GRAFICOS
 ===================================================== */
 
 function atualizarGraficos(dados) {
 
     destruirGraficos();
 
-
     const labels =
         prepararLabels(dados);
-
 
     graficoNivel =
         criarGrafico(
             "graficoNivel",
             labels,
-            prepararValores(
-                dados,
-                "nivel"
-            ),
+            prepararValores(dados, "nivel"),
             "cm",
             "Nível"
         );
-
 
     graficoTemperatura =
         criarGrafico(
             "graficoTemperatura",
             labels,
-            prepararValores(
-                dados,
-                "temperatura"
-            ),
+            prepararValores(dados, "temperatura"),
             "°C",
             "Temperatura"
         );
-
 
     graficoPh =
         criarGrafico(
             "graficoPh",
             labels,
-            prepararValores(
-                dados,
-                "ph"
-            ),
+            prepararValores(dados, "ph"),
             "pH",
             "pH"
         );
-
 
     graficoTurbidez =
         criarGrafico(
             "graficoTurbidez",
             labels,
-            prepararValores(
-                dados,
-                "turbidez"
-            ),
+            prepararValores(dados, "turbidez"),
             "NTU",
             "Turbidez"
         );
+
 }
 
 
 /* =====================================================
-   DESTRUIR GRÁFICOS
+   DESTRUIR GRAFICOS
 ===================================================== */
 
 function destruirGraficos() {
@@ -636,84 +796,100 @@ function destruirGraficos() {
         graficoNivel.destroy();
 
         graficoNivel = null;
-    }
 
+    }
 
     if (graficoTemperatura) {
 
         graficoTemperatura.destroy();
 
         graficoTemperatura = null;
-    }
 
+    }
 
     if (graficoPh) {
 
         graficoPh.destroy();
 
         graficoPh = null;
-    }
 
+    }
 
     if (graficoTurbidez) {
 
         graficoTurbidez.destroy();
 
         graficoTurbidez = null;
+
     }
+
 }
 
 
 /* =====================================================
-   BOTÃO DE ATUALIZAÇÃO
+   BOTAO DE ATUALIZACAO
 ===================================================== */
 
 function configurarBotaoAtualizar() {
 
-    elementos.botaoAtualizar
-        .addEventListener(
-            "click",
-            async () => {
+    if (!elementos.botaoAtualizar) {
+        return;
+    }
 
-                const icone =
-                    elementos.botaoAtualizar
-                        .querySelector("i");
+    elementos.botaoAtualizar.addEventListener(
+        "click",
+        async () => {
 
+            const icone =
+                elementos.botaoAtualizar.querySelector("i");
 
-                icone.classList.add(
-                    "spin"
-                );
+            if (icone) {
 
-
-                await buscarDados();
-
-
-                icone.classList.remove(
-                    "spin"
-                );
+                icone.classList.add("spin");
 
             }
-        );
+
+            await buscarDados();
+
+            if (icone) {
+
+                icone.classList.remove("spin");
+
+            }
+
+        }
+
+    );
+
 }
 
 
 /* =====================================================
-   INICIALIZAÇÃO
+   INICIALIZACAO
 ===================================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+function inicializarWaterVision() {
 
-        buscarDados();
+    buscarDados();
 
-        configurarBotaoAtualizar();
+    configurarBotaoAtualizar();
 
+    setInterval(
+        buscarDados,
+        INTERVALO_ATUALIZACAO
+    );
 
-        setInterval(
-            buscarDados,
-            INTERVALO_ATUALIZACAO
-        );
+}
 
-    }
-);
+if (document.readyState === "loading") {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        inicializarWaterVision
+    );
+
+} else {
+
+    inicializarWaterVision();
+
+}
